@@ -1,5 +1,48 @@
-<div class="grid h-screen place-items-center">
-  <div class="font-bold text-3xl">
-    Fyle Internship Challenge
+<div style="text-align:center" class="content">
+  <h1>GitHub Repositories</h1>
+  <div>
+    <input [(ngModel)]="githubUsername" placeholder="Enter GitHub username" />
+    <button (click)="getUserData()">Search</button>
+  </div>
+
+  <div *ngIf="errorMessage" class="error">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="isLoading" class="loading">
+    <!-- Skeleton Loader -->
+    <div class="skeleton-loader"></div>
+    <div class="skeleton-loader"></div>
+    <div class="skeleton-loader"></div>
+  </div>
+
+  <div *ngIf="user && !isLoading">
+    <h2>{{ user.login }}</h2>
+    <img [src]="user.avatar_url" alt="{{ user.login }}" width="100" />
+    <p>{{ user.bio }}</p>
+
+    <div>
+      <label for="pageSize">Repositories per page:</label>
+      <select id="pageSize" [(ngModel)]="perPage" (change)="onPageSizeChange(perPage)">
+        <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
+      </select>
+    </div>
+
+    <div *ngIf="repos.length > 0">
+      <h3>Repositories</h3>
+      <ul>
+        <li *ngFor="let repo of repos">
+          <a [href]="repo.html_url" target="_blank">{{ repo.name }}</a> - {{ repo.description }}
+          <div *ngIf="repo.topics.length > 0">
+            <span *ngFor="let topic of repo.topics" class="topic">{{ topic }}</span>
+          </div>
+        </li>
+      </ul>
+      <div class="pagination">
+        <button (click)="onPageChange(page - 1)" [disabled]="page === 1">Previous</button>
+        <span>Page {{ page }}</span>
+        <button (click)="onPageChange(page + 1)" [disabled]="repos.length < perPage">Next</button>
+      </div>
+    </div>
   </div>
 </div>

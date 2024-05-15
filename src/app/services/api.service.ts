@@ -1,19 +1,33 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { tap, throwError } from 'rxjs';
+import { Observable } from 'rxjs';
+
+export interface Repository {
+  id: number;
+  name: string;
+  full_name: string;
+  html_url: string;
+  description: string;
+  topics: string[];
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
 
-  constructor(
-    private httpClient: HttpClient
-  ) { }
+  constructor(private httpClient: HttpClient) { }
 
-  getUser(githubUsername: string) {
-    return this.httpClient.get(`https://api.github.com/users/${githubUsername}`);
+  getUser(githubUsername: string): Observable<any> {
+    return this.httpClient.get<any>(`https://api.github.com/users/${githubUsername}`);
   }
 
-  // implement getRepos method by referring to the documentation. Add proper types for the return type and params 
+  getRepos(githubUsername: string, page: number, perPage: number): Observable<Repository[]> {
+    const params = new HttpParams()
+      .set('page', page)
+      .set('per_page', perPage)
+      .set('sort', 'updated');
+
+    return this.httpClient.get<Repository[]>(`https://api.github.com/users/${githubUsername}/repos`, { params });
+  }
 }
